@@ -9,6 +9,12 @@ echo "Installing dependencies..."
 $(is_installed "ros-${ROS_CODENAME}")
 ROS_INSTALLED=$?
 echo "ROS_INSTALLED:${ROS_INSTALLED}"
+if [ "0" = ${ROS_INSTALLED} ]; then
+     :
+else
+     echo "ros installed."
+     exit 0
+fi
 
 if [ "0" = ${ROS_INSTALLED} ] ; then
     echo ">Installing ROS Indigo. "
@@ -24,10 +30,18 @@ if [ "0" = ${ROS_INSTALLED} ]; then
     printf 'What type of ROS installation would you like to use. [desktop-full, desktop, ros-base]:'
     reply=""
     read reply
-    while [[ "desktop-full" != ${reply} && "desktop" != ${reply} && "ros-base" != ${reply} ]]
+    while :
     do
-        printf 'Type it again. [desktop-full, desktop, ros-base]:'
-        read reply
+        if [ "desktop-full" != ${reply} ]; then
+            break;
+        elif [ "desktop" != ${reply} ]; then
+            break;
+        elif [ "ros-base" != ${reply} ]; then
+            break;
+        else
+            printf 'Type it again. [desktop-full, desktop, ros-base]:'
+            read reply
+        fi
     done
     target="ros-${ROS_CODENAME}-${reply}"
     echo "installing ${target}, python-rosinstall ..."
@@ -41,10 +55,4 @@ if [ -f ${HOME}/.ros_profile ]; then
   source ${HOME}/.ros_profile
 fi
 ' >> ${HOME}/.profile
-fi
-
-if [ "0" = ${ROS_INSTALLED} ]; then
-     :
-else
-     echo "ros installed."
 fi
