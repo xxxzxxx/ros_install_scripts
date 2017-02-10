@@ -32,11 +32,11 @@ if [ "0" = ${ROS_INSTALLED} ]; then
     read reply
     while :
     do
-        if [ "desktop-full" != ${reply} ]; then
+        if [ "desktop-full" = ${reply} ]; then
             break;
-        elif [ "desktop" != ${reply} ]; then
+        elif [ "desktop" = ${reply} ]; then
             break;
-        elif [ "ros-base" != ${reply} ]; then
+        elif [ "ros-base" = ${reply} ]; then
             break;
         else
             printf 'Type it again. [desktop-full, desktop, ros-base]:'
@@ -47,12 +47,13 @@ if [ "0" = ${ROS_INSTALLED} ]; then
     echo "installing ${target}, python-rosinstall ..."
     sudo apt install -y ${target} python-rosinstall
 fi
-if [ ! -f ~/.ros_profile ]; then
-printf "export PATH=/opt/ros/${ROS_CODENAME}/bin/;" > ~/.ros_profile
-echo '${PATH}' >> ~/.ros_profile
+ROS_PROFILE=${HOME}/.ros_profile
+if [ ! -f ${ROS_PROFILE} ]; then
+echo "export ROS_HOME=/opt/ros/${ROS_CODENAME}" > ${ROS_PROFILE}
+echo 'export PATH=${ROS_HOME}/bin:${PATH}' >> ${ROS_PROFILE}
 echo '
 if [ -f ${HOME}/.ros_profile ]; then
   source ${HOME}/.ros_profile
 fi
-' >> ${HOME}/.profile
+' >> ${OS_PROFILE}
 fi

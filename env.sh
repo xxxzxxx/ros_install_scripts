@@ -1,9 +1,43 @@
 #!/bin/bash
 
+find_profile() {
+    local DETECTED_PROFILE
+    DETECTED_PROFILE=''
+    local SHELLTYPE
+    SHELLTYPE="$(basename "/$SHELL")"
+    if [ "$SHELLTYPE" = "bash" ]; then
+        if [ -f "$HOME/.bashrc" ]; then
+            DETECTED_PROFILE="$HOME/.bashrc"
+        elif [ -f "$HOME/.bash_profile" ]; then
+            DETECTED_PROFILE="$HOME/.bash_profile"
+        fi
+    elif [ "$SHELLTYPE" = "zsh" ]; then
+    DETECTED_PROFILE="$HOME/.zshrc"
+    fi
+
+    if [ -z "$DETECTED_PROFILE" ]; then
+        if [ -f "$HOME/.profile" ]; then
+            DETECTED_PROFILE="$HOME/.profile"
+        elif [ -f "$HOME/.bashrc" ]; then
+            DETECTED_PROFILE="$HOME/.bashrc"
+        elif [ -f "$HOME/.bash_profile" ]; then
+            DETECTED_PROFILE="$HOME/.bash_profile"
+        elif [ -f "$HOME/.zshrc" ]; then
+            DETECTED_PROFILE="$HOME/.zshrc"
+        fi
+    fi
+
+    if [ ! -z "$DETECTED_PROFILE" ]; then
+        echo "$DETECTED_PROFILE"
+    fi
+    return $DETECTED_PROFILE
+}
+
 export OS_DISTRIBUTOR_ID=$(lsb_release -si)
 #export OS_DISTRIBUTOR_ID=Ubuntu
 export OS_CODENAME=$(lsb_release -sc)
 export OS_SHELL=$(basename $SHELL)
+export OS_PROFILE=$(find_profile)
 
 echo "OS_DISTRIBUTOR_ID:${OS_DISTRIBUTOR_ID}"
 if [ "${OS_DISTRIBUTOR_ID}" = "Ubuntu" ] ;then
@@ -39,4 +73,5 @@ fi
 echo "OS_DISTRIBUTOR_ID:${OS_DISTRIBUTOR_ID}"
 echo "OS_CODENAME      :${OS_CODENAME}"
 echo "OS_SHELL         :${OS_SHELL}"
+echo "OS_PROFILE       :${OS_PROFILE}"
 echo "ROS_CODENAME     :${ROS_CODENAME}"
